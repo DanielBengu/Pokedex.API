@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pokedex API Business\Pokedex API Business.csproj" />
+    <ProjectReference Include="..\Pokedex API Data\Pokedex API Data.csproj" />
     <ProjectReference Include="..\Pokedex API Model\Pokedex API Model.csproj" />
   </ItemGroup>
 

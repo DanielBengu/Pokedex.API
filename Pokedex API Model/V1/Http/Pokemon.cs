@@ -8,6 +8,6 @@ namespace Pokedex.API.Model.V1
 
         public string Description { get; set; } = string.Empty;
 
-        public bool IsLegendary { get; set; }
+        public bool Legendary { get; set; }
     }
 }

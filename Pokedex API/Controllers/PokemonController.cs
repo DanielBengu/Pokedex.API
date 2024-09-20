@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pokedex.API.Business.V1;
-using Pokedex.API.Model.V1;
-using static Pokedex.API.Model.V1.HttpRequestGet;
+using static Pokedex_API_Model.V1.Http.HttpRequestGet;
 
 namespace Pokedex.API.Controllers.V1
 {
@@ -13,17 +12,17 @@ namespace Pokedex.API.Controllers.V1
         private readonly IPokedexApiService _apiService = apiService;
 
         [HttpGet]
-        public GetBasicResponse GetBasicById([FromBody]GetBasicRequest pokemon)
+        public async Task<GetBasicResponse> GetBasicById([FromBody]GetBasicRequest pokemon)
         {
             _logger.LogInformation("GetBasicById request for Pokemon: {pokemon}", pokemon);
-            return _apiService.GetBasicById(pokemon);
+            return await _apiService.GetBasicById(pokemon);
         }
 
         [HttpGet("Translated")]
-        public GetTranslatedResponse GetTranslatedById([FromBody]GetTranslatedRequest pokemon)
+        public async Task<GetTranslatedResponse> GetTranslatedById([FromBody]GetTranslatedRequest pokemon)
         {
             _logger.LogInformation("GetTranslatedById request for Pokemon: {pokemon}", pokemon);
-            return _apiService.GetTranslatedById(pokemon);
+            return await _apiService.GetTranslatedById(pokemon);
         }
     }
 }

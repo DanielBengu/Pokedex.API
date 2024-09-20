@@ -1,41 +1,41 @@
-﻿using static Pokedex.API.Model.V1.HttpRequestGet;
+﻿using Pokedex_API_Data.V1;
+using static Pokedex_API_Model.V1.Http.HttpRequestGet;
 
 namespace Pokedex.API.Business.V1
 {
     public interface IPokedexApiService
     {
-        GetBasicResponse GetBasicById(GetBasicRequest pokemon);
-        GetTranslatedResponse GetTranslatedById(GetTranslatedRequest pokemon);
+        Task<GetBasicResponse> GetBasicById(GetBasicRequest pokemon);
+        Task<GetTranslatedResponse> GetTranslatedById(GetTranslatedRequest pokemon);
     }
 
-    public class PokedexApiService : IPokedexApiService
+    public class PokedexApiService(IPokedexRepository repository): IPokedexApiService
     {
-        public GetBasicResponse GetBasicById(GetBasicRequest request)
+        readonly IPokedexRepository _repository = repository;
+
+        public async Task<GetBasicResponse> GetBasicById(GetBasicRequest request)
         {
-            return new()
-            {
-                Pokemon = new()
-                {
-                    Name = request.Pokemon,
-                    Description = request.Pokemon,
-                    Habitat = request.Pokemon,
-                    IsLegendary = true
-                }
-            };
+            if (!ValidateRequest(request, out string errorMessage))
+                throw new ArgumentException("Error during GetBasicById request validation: {err}", errorMessage);
+
+            return await _repository.GetBasicById(request.Pokemon);
         }
 
-        public GetTranslatedResponse GetTranslatedById(GetTranslatedRequest request)
+        public async Task<GetTranslatedResponse> GetTranslatedById(GetTranslatedRequest request)
         {
-            return new()
-            {
-                Pokemon = new()
-                {
-                    Name = request.Pokemon,
-                    Description = request.Pokemon,
-                    Habitat = request.Pokemon,
-                    IsLegendary = true
-                }
-            };
+            if (!ValidateRequest(request, out string errorMessage))
+                throw new ArgumentException("Error during GetTranslatedById request validation: {err}", errorMessage);
+
+            return await _repository.GetTranslatedById(request.Pokemon); ;
+        }
+
+        bool ValidateRequest(BaseRequest request, out string errorMessage)
+        {
+            errorMessage = string.Empty;
+
+            //Add necessary request validation here
+
+            return true;
         }
 
     }
