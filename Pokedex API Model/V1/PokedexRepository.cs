@@ -15,38 +15,27 @@ namespace Pokedex_API_Data.V1
 
     public class PokedexRepository(IOptions<Endpoints> endpoints, HttpClient httpClient) : IPokedexRepository
     {
+        private const string POKEMON_CAVE_HABITAT = "cave";
         private readonly Endpoints _endpoints = endpoints.Value;
         private readonly HttpClient _httpClient = httpClient;
 
         public async Task<GetBasicResponse> GetBasicById(string id)
         {
-            string pokeAPIEndpoint = $"{_endpoints.PokeAPI}/{id}";
-            var pokeAPI = await SendHttpGetRequest<PokeAPI>(pokeAPIEndpoint);
+            var pokemon = await GetPokemonFromAPI(id);
             return new()
             {
-                Pokemon = new()
-                {
-                    Name = pokeAPI.Name,
-                    Description = CleanDescription(pokeAPI.FlavorTextEntries.First().FlavorText),
-                    Habitat = pokeAPI.Habitat.Name,
-                    Legendary = pokeAPI.IsLegendary
-                }
+                Pokemon = pokemon
             };
         }
 
         public async Task<GetTranslatedResponse> GetTranslatedById(string id)
         {
-            string pokeAPIEndpoint = $"{_endpoints.PokeAPI}/{id}";
-            var pokeAPI = await SendHttpGetRequest<PokeAPI>(pokeAPIEndpoint);
+            var pokemon = await GetPokemonFromAPI(id);
+            FunTranslationsType translationType = GetTranslationType(pokemon);
+            var translatedDescription = 
             return new()
             {
-                Pokemon = new()
-                {
-                    Name = pokeAPI.Name,
-                    Description = CleanDescription(pokeAPI.FlavorTextEntries.First().FlavorText),
-                    Habitat = pokeAPI.Habitat.Name,
-                    Legendary = pokeAPI.IsLegendary
-                }
+                Pokemon = pokemon
             };
         }
 
@@ -60,15 +49,43 @@ namespace Pokedex_API_Data.V1
             return JsonSerializer.Deserialize<T>(content) ?? throw new Exception("Error during data serialization from API"); ;
         }
 
-        public static string CleanDescription(string description)
+        static FunTranslationsType GetTranslationType(Pokemon pokemon)
+        {
+            if (pokemon == null || pokemon.Description == null || pokemon.Description == string.Empty)
+                return FunTranslationsType.Default;
+
+
+            if (pokemon.Habitat == POKEMON_CAVE_HABITAT || pokemon.Legendary)
+                return FunTranslationsType.Yoda;
+            else
+                return FunTranslationsType.Shakespeare;
+        }
+
+        public async Task<Pokemon> GetPokemonFromAPI(string id, FunTranslationsType funTranslationType = FunTranslationsType.Default)
+        {
+            string pokeAPIEndpoint = $"{_endpoints.PokeAPI}/{id}";
+            var pokeAPI = await SendHttpGetRequest<PokeAPI>(pokeAPIEndpoint);
+
+            var description = CleanAndTranslateDescription(pokeAPI.FlavorTextEntries.First().FlavorText, funTranslationType);
+            return new()
+            {
+                Name = pokeAPI.Name,
+                Description = description,
+                Habitat = pokeAPI.Habitat.Name,
+                Legendary = pokeAPI.IsLegendary
+            };
+        }
+
+        public static string CleanAndTranslateDescription(string description, FunTranslationsType translationType)
         {
             return description.Replace("\n", " ").Replace("\f", " ");
         }
 
-        public enum HttpActions
+        public enum FunTranslationsType
         {
-            Get,
-            Post,
+            Default,
+            Yoda,
+            Shakespeare
         }
     }
 }
