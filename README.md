@@ -6,10 +6,12 @@ It's developed with ASP.NET Core and has an attached DOCKER file that can be use
 
 ## How to run it?
 
-Method #1 : Visual Studio\n
+Method #1 : Visual Studio
+
 To launch and debug the application Visual Studio 2022 is needed, with the Web Develop option installed. Docker isn't required and the project will run it without problem (Make sure the Pokedex API is the one being chosen to launch, not Pokedex API Business, Model, etc..)
 
-Method #2 : Docker\n
+Method #2 : Docker
+
 The project has a docker file that can be run instead, by using the command 'docker build -t pokedex-api .' and, once the image is built, the container can be run with the following command: 'docker run -d -p 8080:8080 -p 8081:8081 pokedex-api'
 
 ## What would I change for the PROD version?
