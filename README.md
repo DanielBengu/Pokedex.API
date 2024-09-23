@@ -12,7 +12,14 @@ To launch and debug the application Visual Studio 2022 is needed, with the Web D
 
 Method #2 : Docker
 
-The project has a docker file that can be run instead, by using the command 'docker build -t pokedex-api .' and, once the image is built, the container can be run with the following command: 'docker run -d -p 8080:8080 -p 8081:8081 pokedex-api'
+The project has a docker file that can be run instead, with the following steps:
+1. Ensure that Docker is running Windows containers (in Docker Desktop, right click on the icon -> Switch to windows containers)
+2. Open the cmd and enter in the "Pokedex API" folder, where the Docker file is located
+3. Run the command 'docker build -t pokedex-api .' to build the image
+4. Once the image is built, the container can be run with the following command: 'docker run -d -p 8080:8080 -p 8081:8081 pokedex-api'
+
+
+After the project is launched (whether via VS or Docker) you can call the methods 
 
 ## What would I change for the PROD version?
 
