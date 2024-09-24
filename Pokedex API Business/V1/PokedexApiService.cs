@@ -16,7 +16,12 @@ namespace Pokedex.API.Business.V1
         public async Task<GetBasicResponse> GetBasicById(GetBasicRequest request)
         {
             if (!ValidateRequest(request, out string errorMessage))
-                throw new ArgumentException("Error during GetBasicById request validation: {err}", errorMessage);
+                return new()
+                {
+                    Pokemon = null,
+                    Message = $"Error during GetBasicById request validation: {errorMessage}",
+                    Result = System.Net.HttpStatusCode.BadRequest
+                };
 
             return await _repository.GetBasicById(request.Pokemon);
         }
@@ -24,7 +29,12 @@ namespace Pokedex.API.Business.V1
         public async Task<GetTranslatedResponse> GetTranslatedById(GetTranslatedRequest request)
         {
             if (!ValidateRequest(request, out string errorMessage))
-                throw new ArgumentException("Error during GetTranslatedById request validation: {err}", errorMessage);
+                return new()
+                {
+                    Pokemon = null,
+                    Message = $"Error during GetBasicById request validation: {errorMessage}",
+                    Result = System.Net.HttpStatusCode.BadRequest
+                };
 
             return await _repository.GetTranslatedById(request.Pokemon); ;
         }
@@ -33,7 +43,7 @@ namespace Pokedex.API.Business.V1
         {
             errorMessage = string.Empty;
 
-            //Add necessary request validation here
+            //Add necessary  generic request validation here
 
             return true;
         }

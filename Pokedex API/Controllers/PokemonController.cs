@@ -12,17 +12,22 @@ namespace Pokedex.API.Controllers.V1
         private readonly IPokedexApiService _apiService = apiService;
 
         [HttpGet]
-        public async Task<GetBasicResponse> GetBasicById([FromBody]GetBasicRequest pokemon)
+        public async Task<ActionResult<GetBasicResponse>> GetBasicById([FromBody]GetBasicRequest pokemon)
         {
             _logger.LogInformation("GetBasicById request for Pokemon: {pokemon}", pokemon);
-            return await _apiService.GetBasicById(pokemon);
+
+            var response = await _apiService.GetBasicById(pokemon);
+
+            return StatusCode((int)response.Result, response);
         }
 
         [HttpGet("Translated")]
-        public async Task<GetTranslatedResponse> GetTranslatedById([FromBody]GetTranslatedRequest pokemon)
+        public async Task<ActionResult<GetTranslatedResponse>> GetTranslatedById([FromBody]GetTranslatedRequest pokemon)
         {
             _logger.LogInformation("GetTranslatedById request for Pokemon: {pokemon}", pokemon);
-            return await _apiService.GetTranslatedById(pokemon);
+            var response = await _apiService.GetTranslatedById(pokemon);
+            
+            return StatusCode((int)response.Result, response);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Pokedex.API.Model.V1;
+using System.Net;
 
 namespace Pokedex_API_Model.V1.Http
 {
@@ -10,6 +11,8 @@ namespace Pokedex_API_Model.V1.Http
 
         public class BaseResponse
         {
+            public HttpStatusCode Result { get; set; }
+            public string Message { get; set; } = string.Empty;
         }
 
         public class GetBasicRequest : BaseRequest
@@ -19,7 +22,8 @@ namespace Pokedex_API_Model.V1.Http
 
         public class GetBasicResponse : BaseResponse
         {
-            public Pokemon Pokemon { get; set; } = default!;
+
+            public Pokemon? Pokemon { get; set; } = default!;
         }
 
         public class GetTranslatedRequest : BaseRequest
@@ -29,7 +33,7 @@ namespace Pokedex_API_Model.V1.Http
 
         public class GetTranslatedResponse : BaseResponse
         {
-            public Pokemon Pokemon { get; set; } = default!;
+            public Pokemon? Pokemon { get; set; } = default!;
         }
     }
 }
