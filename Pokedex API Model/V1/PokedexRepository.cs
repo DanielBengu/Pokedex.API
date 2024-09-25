@@ -69,7 +69,7 @@ namespace Pokedex_API_Data.V1
                     };
 
                 FunTranslationsType translationType = GetTranslationType(pokemon);
-                pokemon.Description = await CleanAndTranslateDescription(pokemon.Description, translationType);
+                pokemon.Description = await TranslateDescription(pokemon.Description, translationType);
 
                 return new()
                 {
@@ -127,20 +127,23 @@ namespace Pokedex_API_Data.V1
             return new()
             {
                 Name = contentDeserialied.Name,
-                Description = contentDeserialied.FlavorTextEntries.First().FlavorText,
+                Description = CleanDescription(contentDeserialied.FlavorTextEntries.First().FlavorText),
                 Habitat = contentDeserialied.Habitat,
                 Legendary = contentDeserialied.IsLegendary
             };
         }
 
-        public async Task<string> CleanAndTranslateDescription(string description, FunTranslationsType translationType)
+        string CleanDescription(string oldDescription)
         {
-            var newDescription = description.Replace("\n", " ");
+            return oldDescription.Replace("\n", " ").Replace("\f", " ");
+        }
 
+        public async Task<string> TranslateDescription(string description, FunTranslationsType translationType)
+        {
             if (translationType == FunTranslationsType.Default)
-                return newDescription;
+                return description;
 
-            return await GetTranslatedDescription(newDescription, translationType);
+            return await GetTranslatedDescription(description, translationType);
         }
 
         async Task<string> GetTranslatedDescription(string description, FunTranslationsType translationsType)
