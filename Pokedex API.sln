@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pokedex API", "Pokedex API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pokedex API Data", "Pokedex API Data\Pokedex API Data.csproj", "{DB6D099E-EE36-40AA-9998-75E4505D81B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokedex API Business TEST", "Pokedex API Business TEST\Pokedex API Business TEST.csproj", "{26BDFDEF-E566-41F9-B452-682D01E00B82}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E675DBEE-D7EB-4490-A52C-4ADC5980C522} = {E675DBEE-D7EB-4490-A52C-4ADC5980C522}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{DB6D099E-EE36-40AA-9998-75E4505D81B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB6D099E-EE36-40AA-9998-75E4505D81B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB6D099E-EE36-40AA-9998-75E4505D81B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26BDFDEF-E566-41F9-B452-682D01E00B82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26BDFDEF-E566-41F9-B452-682D01E00B82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26BDFDEF-E566-41F9-B452-682D01E00B82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26BDFDEF-E566-41F9-B452-682D01E00B82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

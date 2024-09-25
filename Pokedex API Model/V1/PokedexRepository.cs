@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Pokedex_API_Data.V1.EndpointsClasses;
 using System.Diagnostics;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Pokedex_API_Data.V1
 {
@@ -26,20 +27,20 @@ namespace Pokedex_API_Data.V1
             try
             {
                 var pokemon = await GetPokemonFromAPI(id);
+
+                if(pokemon == null)
+                    return new()
+                    {
+                        Result = HttpStatusCode.NotFound,
+                        Message = $"Pokemon {id} not found",
+                        Pokemon = null
+                    };
+
                 return new()
                 {
                     Result = HttpStatusCode.OK,
                     Pokemon = pokemon,
                     Message = string.Empty
-                };
-            }
-            catch (ArgumentException agEx)
-            {
-                return new()
-                {
-                    Result = HttpStatusCode.NotFound,
-                    Message = agEx.Message,
-                    Pokemon = null
                 };
             }
             catch(Exception ex)
@@ -58,22 +59,23 @@ namespace Pokedex_API_Data.V1
             try
             {
                 var pokemon = await GetPokemonFromAPI(id);
+
+                if (pokemon == null)
+                    return new()
+                    {
+                        Result = HttpStatusCode.NotFound,
+                        Message = $"Pokemon {id} not found",
+                        Pokemon = null
+                    };
+
                 FunTranslationsType translationType = GetTranslationType(pokemon);
                 pokemon.Description = await CleanAndTranslateDescription(pokemon.Description, translationType);
+
                 return new()
                 {
                     Result = HttpStatusCode.OK,
-                    Message = string.Empty,
-                    Pokemon = pokemon
-                };
-            }
-            catch (ArgumentException agEx)
-            {
-                return new()
-                {
-                    Result = HttpStatusCode.NotFound,
-                    Message = agEx.Message,
-                    Pokemon = null
+                    Pokemon = pokemon,
+                    Message = string.Empty
                 };
             }
             catch (Exception ex)
@@ -87,18 +89,10 @@ namespace Pokedex_API_Data.V1
             }
         }
 
-        public async Task<T> SendHttpGetRequest<T>(string endpoint)
+        public async Task<HttpResponseMessage> SendHttpGetRequest(string endpoint)
         {
             HttpResponseMessage response = await _httpClient.GetAsync(endpoint);
-
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                throw new ArgumentException($"{typeof(T)} Not Found Error: {response.ReasonPhrase}");
-            else if (!response.IsSuccessStatusCode)
-                throw new Exception($"{typeof(T)} Generic Error: {response.ReasonPhrase}");
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            return JsonSerializer.Deserialize<T>(content) ?? throw new Exception($"{typeof(T)} Serialization Error");
+            return response;
         }
 
         static FunTranslationsType GetTranslationType(Pokemon pokemon)
@@ -113,20 +107,29 @@ namespace Pokedex_API_Data.V1
                 return FunTranslationsType.Shakespeare;
         }
 
-        public async Task<Pokemon> GetPokemonFromAPI(string id, FunTranslationsType funTranslationType = FunTranslationsType.Default)
+        public async Task<Pokemon?> GetPokemonFromAPI(string id)
         {
             if (id == null || id.Trim() == string.Empty)
-                throw new ArgumentException("Empty pokemon id");
+                return null;
 
             string pokeAPIEndpoint = $"{_endpoints.PokeAPI}/{id.ToLower()}";
-            var pokeAPIResponse = await SendHttpGetRequest<PokeAPI>(pokeAPIEndpoint);
-            var description = await CleanAndTranslateDescription(pokeAPIResponse.FlavorTextEntries.First().FlavorText, funTranslationType);
+            var pokeAPIResponse = await SendHttpGetRequest(pokeAPIEndpoint);
+
+            if (!pokeAPIResponse.IsSuccessStatusCode)
+                return null;
+
+            var content = await pokeAPIResponse.Content.ReadAsStringAsync();
+            var contentDeserialied = JsonSerializer.Deserialize<PokeAPI>(content);
+
+            if (contentDeserialied == null)
+                return null;
+
             return new()
             {
-                Name = pokeAPIResponse.Name,
-                Description = description,
-                Habitat = pokeAPIResponse.Habitat,
-                Legendary = pokeAPIResponse.IsLegendary
+                Name = contentDeserialied.Name,
+                Description = contentDeserialied.FlavorTextEntries.First().FlavorText,
+                Habitat = contentDeserialied.Habitat,
+                Legendary = contentDeserialied.IsLegendary
             };
         }
 
@@ -146,8 +149,14 @@ namespace Pokedex_API_Data.V1
                 return description;
 
             string funTranslationsEndPoint = $"{_endpoints.FunTranslations}/{translationsType}.json?text={description.Replace(" ", "%20")}";
-            var funTranslations = await SendHttpGetRequest<FunTranslations>(funTranslationsEndPoint);
-            return funTranslations.Contents.Translated;
+            var funTranslations = await SendHttpGetRequest(funTranslationsEndPoint);
+            var content = await funTranslations.Content.ReadAsStringAsync();
+            var contentDeserialied = JsonSerializer.Deserialize<FunTranslations>(content);
+
+            if (contentDeserialied == null)
+                return description;
+
+            return contentDeserialied.Contents.Translated;
         }
 
         public enum FunTranslationsType
