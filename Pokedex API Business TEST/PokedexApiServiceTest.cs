@@ -37,9 +37,7 @@ namespace Pokedex.API.Business.TEST
                     Result = System.Net.HttpStatusCode.OK
                 });
 
-            var request = new GetBasicRequest { Pokemon = pokemonName };
-
-            var result = await _controller.GetBasicById(request);
+            var result = await _controller.GetBasicById(pokemonName);
             var okResult = result.Result as ObjectResult;
 
             Assert.AreEqual(200, okResult?.StatusCode);
@@ -56,9 +54,7 @@ namespace Pokedex.API.Business.TEST
                     Result = System.Net.HttpStatusCode.NotFound
                 });
 
-            var request = new GetBasicRequest { Pokemon = invalidPokemon };
-
-            var result = await _controller.GetBasicById(request);
+            var result = await _controller.GetBasicById(invalidPokemon);
             var notFoundResult = result.Result as ObjectResult;
 
             Assert.AreEqual(404, notFoundResult?.StatusCode);

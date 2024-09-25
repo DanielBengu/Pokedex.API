@@ -36,7 +36,7 @@ namespace Pokedex.API.Business.V1
                     Result = System.Net.HttpStatusCode.BadRequest
                 };
 
-            return await _repository.GetTranslatedById(request.Pokemon); ;
+            return await _repository.GetTranslatedById(request.Pokemon);
         }
 
         bool ValidateRequest(BaseRequest request, out string errorMessage)
