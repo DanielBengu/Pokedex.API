@@ -6,20 +6,23 @@ It's developed with ASP.NET Core and has an attached DOCKER file that can be use
 
 ## How to run it?
 
-Method #1 : Visual Studio
+### Method #1 : Visual Studio
 
 To launch and debug the application Visual Studio 2022 is needed, with the Web Develop option installed. Docker isn't required and the project will run it without problem (Make sure the Pokedex API is the one being chosen to launch, not Pokedex API Business, Model, etc..)
 
-Method #2 : Docker
+### Method #2 : Docker
 
 The project has a docker file that can be run instead, with the following steps:
 1. Ensure that Docker is running Windows containers (in Docker Desktop, right click on the icon -> Switch to windows containers)
-2. Open the cmd and enter in the "Pokedex API" folder, where the Docker file is located
-3. Run the command 'docker build -t pokedex-api .' to build the image
-4. Once the image is built, the container can be run with the following command: 'docker run -d -p 8080:8080 -p 8081:8081 pokedex-api'
+2. Open the cmd and enter in the root folder of the solution "Pokedex.API", where the Docker file is located
+3. Run the command 'docker build -t pokedex-api:latest .' to build the image
+4. Once the image is built, the container can be run with the following command: 'docker run -d -p 8080:8080 -p 8081:8081 --name pokedex-api-container pokedex-api:latest' (you can change the port 8080 and 8081 to your preferred ports)
 
 
-After the project is launched (whether via VS or Docker) you can call the methods 
+After the project is launched (whether via VS or Docker) you can call the API with the following endpoints (the port may change based on building configuration, for example launching via VS Studio should set the port to 7026):
+
+http://localhost:8080/Pokemon/mewtwo
+http://localhost:8080/Pokemon/Translated/mewtwo
 
 ## What would I change for the PROD version?
 
