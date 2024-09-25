@@ -1,26 +1,40 @@
-# Use the Windows-based image for ASP.NET Core runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-ltsc2022 AS base
+# Base image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Use the Windows-based image for .NET SDK
-FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-ltsc2022 AS build
+# Build image
+FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy the project file and restore dependencies
-COPY ["Pokedex API.csproj", "./"]
-RUN dotnet restore "Pokedex API.csproj"
+# Copy the solution file
+COPY ["Pokedex API.sln", "./"]
 
-# Copy the rest of the files and build the project
-COPY . .   # This should copy all files from the current directory (where the Dockerfile is located)
-WORKDIR "/src"
-RUN dotnet build "Pokedex API.csproj" -c ${BUILD_CONFIGURATION} -o /app/build
+# Copy csproj files from each project folder
+COPY ["Pokedex API/Pokedex API.csproj", "Pokedex API/"]
+COPY ["Pokedex API Business/Pokedex API Business.csproj", "Pokedex API Business/"]
+COPY ["Pokedex API Business TEST/Pokedex API Business TEST.csproj", "Pokedex API Business TEST/"]
+COPY ["Pokedex API Data/Pokedex API Data.csproj", "Pokedex API Data/"]
+COPY ["Pokedex API Model/Pokedex API Model.csproj", "Pokedex API Model/"]
 
+# Restore all dependencies
+RUN dotnet restore "Pokedex API.sln"
+
+# Copy the entire project folder
+COPY . .
+
+# Build the application
+WORKDIR "/src/Pokedex API"
+RUN dotnet build "Pokedex API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+# Publish the application
 FROM build AS publish
-RUN dotnet publish "Pokedex API.csproj" -c ${BUILD_CONFIGURATION} -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "Pokedex API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Final image
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

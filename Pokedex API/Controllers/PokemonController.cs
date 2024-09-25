@@ -11,22 +11,25 @@ namespace Pokedex.API.Controllers.V1
         private readonly ILogger<PokemonController> _logger = logger;
         private readonly IPokedexApiService _apiService = apiService;
 
-        [HttpGet]
-        public async Task<ActionResult<GetBasicResponse>> GetBasicById([FromBody]GetBasicRequest pokemon)
+        [HttpGet("{pokemonId}")]
+        public async Task<ActionResult<GetBasicResponse>> GetBasicById(string pokemonId)
         {
-            _logger.LogInformation("GetBasicById request for Pokemon: {pokemon}", pokemon);
+            _logger.LogInformation("GetBasicById request for Pokemon: {pokemonId}", pokemonId);
 
-            var response = await _apiService.GetBasicById(pokemon);
+            var request = new GetBasicRequest { Pokemon = pokemonId };
+            var response = await _apiService.GetBasicById(request);
 
             return StatusCode((int)response.Result, response);
         }
 
-        [HttpGet("Translated")]
-        public async Task<ActionResult<GetTranslatedResponse>> GetTranslatedById([FromBody]GetTranslatedRequest pokemon)
+        [HttpGet("Translated/{pokemonId}")]
+        public async Task<ActionResult<GetTranslatedResponse>> GetTranslatedById(string pokemonId)
         {
-            _logger.LogInformation("GetTranslatedById request for Pokemon: {pokemon}", pokemon);
-            var response = await _apiService.GetTranslatedById(pokemon);
-            
+            _logger.LogInformation("GetTranslatedById request for Pokemon: {pokemonId}", pokemonId);
+
+            var request = new GetTranslatedRequest { Pokemon = pokemonId };
+            var response = await _apiService.GetTranslatedById(request);
+
             return StatusCode((int)response.Result, response);
         }
     }

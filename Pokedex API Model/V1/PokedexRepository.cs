@@ -109,7 +109,7 @@ namespace Pokedex_API_Data.V1
 
         public async Task<Pokemon?> GetPokemonFromAPI(string id)
         {
-            if (id == null || id.Trim() == string.Empty)
+            if (string.IsNullOrEmpty(id.Trim()))
                 return null;
 
             string pokeAPIEndpoint = $"{_endpoints.PokeAPI}/{id.ToLower()}";
